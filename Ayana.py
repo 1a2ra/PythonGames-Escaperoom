@@ -1,5 +1,9 @@
-def maze_game():
+def maze_game(reactor_win=None, quit_attempt=1):
     import random
+    import os
+
+    def clear_screen():
+        os.system("cls" if os.name == "nt" else "clear")
 
     mazes = [
         [
@@ -79,11 +83,21 @@ def maze_game():
     game_over = False
     won = False
 
+    clear_screen()
     print("=" * 31)
     print("     THE LABYRINTH QUEST")
     print("=" * 31)
     print("Find the key (K) and reach the exit (X)!")
     print("Avoid the enemy (E)!\n")
+
+    if reactor_win is not None:
+        if reactor_win:
+            print("Previous game: Reactor WON.")
+        else:
+            print("Previous game: Reactor LOST.")
+        print("Reactor chest code: A_J4")
+    if quit_attempt > 1:
+        print("Maze attempt {}/3.".format(quit_attempt))
 
     print("CONTROLS:")
     print("  [W] Up")
@@ -92,8 +106,10 @@ def maze_game():
     print("  [D] Right")
     print("  [Q] Quit")
     print("=" * 31)
+    input("Press Enter to start...")
 
     while game_over == False:
+        clear_screen()
         print("\n" + "-" * 27)
 
         r = 0
@@ -125,6 +141,9 @@ def maze_game():
 
         if move == "Q":
             print("You quit the game. Goodbye!")
+            if quit_attempt < 3:
+                return maze_game(reactor_win, quit_attempt + 1)
+            game_over = True
             break
 
         new_row = player_row
@@ -140,10 +159,12 @@ def maze_game():
             new_col = player_col + 1
         else:
             print("Invalid input! Please press W, A, S, D, or Q.")
+            input("Press Enter to continue...")
             continue
 
         if maze[new_row][new_col] == "#":
             print("Ouch! You hit a wall!")
+            input("Press Enter to continue...")
             continue
 
         if new_row == enemy_row and new_col == enemy_col:
@@ -167,6 +188,7 @@ def maze_game():
                 continue
             else:
                 print("The door is locked! You need the key first!")
+                input("Press Enter to continue...")
 
         row_diff = abs(enemy_row - player_row)
         col_diff = abs(enemy_col - player_col)
@@ -207,6 +229,7 @@ def maze_game():
             game_over = True
 
 
+    clear_screen()
     if won == True:
         print("\nCONGRATULATIONS! YOU BEAT THE GAME!")
         print()
